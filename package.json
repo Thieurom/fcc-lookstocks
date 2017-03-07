@@ -1,0 +1,28 @@
+{
+  "name": "fcc-lookstocks",
+  "version": "1.0.0",
+  "description": "LookStocks, a Free Code Camp dynamic web application project.",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thieurom/fcc-lookstocks.git"
+  },
+  "author": "doanthieu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Thieurom/fcc-lookstocks/issues"
+  },
+  "homepage": "https://github.com/Thieurom/fcc-lookstocks#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "mongoose": "^4.8.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
