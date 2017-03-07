@@ -4,7 +4,7 @@
   "description": "LookStocks, a Free Code Camp dynamic web application project.",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon server.js",
+    "start": "./node_modules/.bin/nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,8 +19,10 @@
   "homepage": "https://github.com/Thieurom/fcc-lookstocks#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
+    "dotenv": "^4.0.0",
     "express": "^4.15.2",
-    "mongoose": "^4.8.6"
+    "mongoose": "^4.8.6",
+    "request": "^2.80.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
