@@ -1,0 +1,228 @@
+$color-primary: #BDBDBD
+$color-primary-light: #E8E8E8
+$color-secondary: #458EE5
+$color-accent: #31CD9A
+$color-white: #fff
+$color-black: #000
+$color-red: #D0011B
+
+
+// Base
+html
+    min-width: 740px
+
+body
+    margin: 0
+    font:
+        family: 'Roboto', 'Helvetica', 'Arial', sans-serif
+        size: 14px
+        weight: 300
+  
+  
+// Typography    
+h1,
+.h1
+    margin: 0
+    font-size: 2.5rem
+    font-weight: 300
+    text-transform: uppercase
+  
+a
+    text-decoration: none
+    color: inherit
+
+
+// Misc
+@keyframes fade-out
+  from
+    opacity: 1
+  to
+    opacity: 0
+    
+    
+.animated
+  animation: fade-out 250ms ease-in-out
+
+
+// Components
+.chart-wrapper
+    box-sizing: border-box
+    position: absolute
+    z-index: 2
+    height: 100%
+    left: 0
+    right: 0
+    border: 2px solid $color-accent
+    transition: right 400ms ease-in-out
+    overflow: hidden
+    
+    .show-menu &
+        left: 0
+        right: 298px
+
+
+.stock-chart
+    height: 100%
+    width: 100%
+    background-color: $color-white
+    text-align: center
+
+
+.menu
+    position: absolute
+    top: 0
+    right: 0
+    z-index: 1
+    box-sizing: border-box
+    height: 100%
+    width: 300px
+    padding: 40px 20px
+    border: 2px solid $color-accent
+    background-color: $color-white
+    overflow: scroll
+    visibility: hidden
+    transition: all 400ms ease-in-out
+    
+    .show-menu &
+        visibility: visible
+
+
+.toggle
+    position: absolute
+    top: 5px
+    right: 0
+
+
+.toggler
+    width: 40px
+    height: 30px
+    padding: 0
+    border: 0
+    background-color: $color-accent
+    font-size: 18px
+    color: $color-white
+    cursor: pointer
+    
+    &:focus
+        outline: 0
+    
+
+.form
+    margin-bottom: 80px
+
+    &__input
+        box-sizing: border-box
+        width: 100%
+        height: 40px
+        border: 1px solid rgba($color-accent, 0.5)
+        padding-left: 20px
+        margin-bottom: 10px
+        font:
+            family: 'Roboto', 'Helvetica', sans-serif
+            size: 14px
+            weight: 300
+        transition: all 400ms
+
+        &:focus
+            border-color: $color-accent
+            outline: 0
+        
+    &__submit
+        width: 100%
+        height: 40px
+        border: 0
+        background-color: $color-accent
+        font:
+            family: 'Roboto', 'Helvetica', sans-serif
+            size: 15px
+            weight: 400
+        color: #fff
+        transition: all 400ms
+        cursor: pointer
+    
+        &:hover
+            background-color: rgba($color-accent, 0.8)
+        
+        &:focus
+            outline: 0
+        
+    &__info
+        display: inline-block
+        margin-bottom: 5px
+        font-weight: 400
+        color: $color-red
+        
+
+.stock
+    position: relative
+    box-sizing: border-box
+    height: 40px
+    border: 1px solid $color-primary-light
+    padding: 6px 40px 6px 20px
+    transition: all 400ms
+    
+    &:hover
+        border-color: $color-primary
+  
+    &:not(last-child)
+        margin-bottom: 10px
+  
+    &__detail
+        line-height: 26px
+        font-weight: 400
+        user-select: none
+        white-space: nowrap 
+        cursor: default
+        overflow-x: scroll
+    
+    &__remove
+        position: absolute
+        top: 9px
+        right: 10px
+        width: 20px
+        height: 20px
+        border: 0
+        background-color: $color-primary-light
+        color: $color-white
+        cursor: pointer
+        transition: all 400ms
+    
+        &:hover
+            background-color: $color-primary
+
+        &:focus
+            outline: 0
+
+
+// Layout
+.header
+    padding: 0 20px
+    height: 70px
+    line-height: 70px
+    text-align: left
+    color: $color-accent
+  
+
+.main
+    position: relative
+    box-sizing: border-box
+    height: calc(100vh - 120px)
+    margin: 0 60px
+  
+    &:after
+        content: ''
+        display: table
+        clear: both
+
+
+.footer
+    height: 50px
+    text-align: center
+  
+    &__note
+        font-size: 14px
+        font-weight: 400
+        line-height: 50px
+        
+    &__link
+        color: $color-accent

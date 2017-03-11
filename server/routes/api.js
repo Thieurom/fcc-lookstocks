@@ -48,7 +48,7 @@ router.route('/:stockSymbol')
 
             stockService.getStockData(symbol, (err, data) => {
                 if (err) return next(err);
-                res.json(data);
+                res.status(200).send(data);
             });
         });
     })

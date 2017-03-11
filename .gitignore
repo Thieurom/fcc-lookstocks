@@ -41,3 +41,10 @@ ldb/
 
 # Local configuration
 .env
+
+# Temp
+.tmp
+client/app/*.html
+
+# Client build
+dist
