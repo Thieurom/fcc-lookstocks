@@ -11,9 +11,14 @@ const QUANDL_API_KEY = process.env.QUANDL_API_KEY;
 exports.getStockMetadata = (stockSymbol, done) => {
     const url = QUANDL_BASE_URL + '/' + stockSymbol + '/metadata.json' + '?api_key=' + QUANDL_API_KEY;
 
-    request(url, (err, resp, data) => {
+    request(url, (err, resp, body) => {
         if (err) return done(err);
-        if (data) done(null, data);
+        if (resp && resp.statusCode >= 400) {
+            let err = new Error();
+            err.status = resp.statusCode;
+            return done(err);
+        }
+        if (body) done(null, body);
     });
 };
 
@@ -28,13 +33,18 @@ exports.getStockData = (stockSymbol, done) => {
     const month = now.getMonth() + 1;
     const date = now.getDate();
 
-    const startDate = (year - 1) + '-' + month + '-' + date;
+    const startDate = (year - 2) + '-' + month + '-' + date;
     const endDate = year + '-' + month + '-' + date;
 
     const url = QUANDL_BASE_URL + '/' + stockSymbol + '.json?column_index=4' + '&api_key=' + QUANDL_API_KEY + '&start_date=' + startDate + '&end_date=' + endDate;
 
-    request(url, (err, resp, data) => {
+    request(url, (err, resp, body) => {
         if (err) return done(err);
-        if (data) done(null, data);
+        if (resp && resp.statusCode >=400) {
+            let err = new Error();
+            err.status = resp.statusCode;
+            return done(err);
+        }
+        if (body) done(null, body);
     });
 };

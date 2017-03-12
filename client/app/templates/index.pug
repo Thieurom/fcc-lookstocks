@@ -22,26 +22,18 @@ html(lange='en')
                     button.toggler(type='button')
 
             .menu
-                form.form
-                    span.form__info Symbol not found.
-                    input.form__input(name='input', type='text', placeholder='Enter stock symbol')
-                    input.form__submit(name='submit', type='submit', value='Add')
+                .menu-title
+                    h2.h2 Manage stocks
+    
+                form.stock-form
+                    span.stock-form__info(name='info')
+                    input.stock-form__input(name='input', type='text', placeholder='Enter stock symbol')
+                    input.stock-form__submit(name='submit', type='submit', value='Add')
 
                 .stock-table
-                    .stock
-                        .stock__detail #[span.stock__symbol GOOG] – #[span.stock__name Alphabet Inc]
-                        button.stock__remove X
-
-                    .stock
-                        .stock__detail #[span.stock__symbol MSFT] – #[span.stock__name Microsoft Corporation]
-                        button.stock__remove X
-
-                    .stock
-                        .stock__detail #[span.stock__symbol AAPL] – #[span.stock__name Apple Inc.]
-                        button.stock__remove X
 
     footer.footer
         span.footer__note 2017. Made by #[a.footer__link(href='https://twitter.com/lethieu') lethieu]. Using #[a.footer__link(href='https://www.quandl.com' Quandl) Quandl], #[a.footer__link(href='http://www.highcharts.com' Highcharts) Highcharts].
 
-    //- script(src='https://code.highcharts.com/stock/highstock.js')
-    //- script(src='/scripts/main.js')
+    script(src='https://code.highcharts.com/stock/highstock.js')
+    script(src='/scripts/main.js')

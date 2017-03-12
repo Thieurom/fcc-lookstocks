@@ -1,8 +1,7 @@
-$color-primary: #BDBDBD
-$color-primary-light: #E8E8E8
-$color-secondary: #458EE5
-$color-accent: #31CD9A
-$color-white: #fff
+$color-primary: #2FCB98
+$color-secondary: #BDBDBD
+$color-secondary-light: #E8E8E8
+$color-white: #FFF
 $color-black: #000
 $color-red: #D0011B
 
@@ -26,6 +25,15 @@ h1,
     font-size: 2.5rem
     font-weight: 300
     text-transform: uppercase
+
+
+h2,
+.h2
+    margin: 0
+    font-size: 1.25rem
+    font-weight: 500
+    text-transform: uppercase
+
   
 a
     text-decoration: none
@@ -52,7 +60,7 @@ a
     height: 100%
     left: 0
     right: 0
-    border: 2px solid $color-accent
+    border: 2px solid $color-primary
     transition: right 400ms ease-in-out
     overflow: hidden
     
@@ -77,7 +85,7 @@ a
     height: 100%
     width: 300px
     padding: 40px 20px
-    border: 2px solid $color-accent
+    border: 2px solid $color-primary
     background-color: $color-white
     overflow: scroll
     visibility: hidden
@@ -85,6 +93,9 @@ a
     
     .show-menu &
         visibility: visible
+
+    
+.menu-ti
 
 
 .toggle
@@ -98,7 +109,7 @@ a
     height: 30px
     padding: 0
     border: 0
-    background-color: $color-accent
+    background-color: $color-primary
     font-size: 18px
     color: $color-white
     cursor: pointer
@@ -107,14 +118,20 @@ a
         outline: 0
     
 
-.form
+.menu-title
+    margin-bottom: 20px
+    text-align: center
+    color: $color-primary
+
+
+.stock-form
     margin-bottom: 80px
 
     &__input
         box-sizing: border-box
         width: 100%
         height: 40px
-        border: 1px solid rgba($color-accent, 0.5)
+        border: 1px solid rgba($color-primary, 0.5)
         padding-left: 20px
         margin-bottom: 10px
         font:
@@ -124,14 +141,14 @@ a
         transition: all 400ms
 
         &:focus
-            border-color: $color-accent
+            border-color: $color-primary
             outline: 0
         
     &__submit
         width: 100%
         height: 40px
         border: 0
-        background-color: $color-accent
+        background-color: $color-primary
         font:
             family: 'Roboto', 'Helvetica', sans-serif
             size: 15px
@@ -141,7 +158,7 @@ a
         cursor: pointer
     
         &:hover
-            background-color: rgba($color-accent, 0.8)
+            background-color: rgba($color-primary, 0.8)
         
         &:focus
             outline: 0
@@ -157,12 +174,12 @@ a
     position: relative
     box-sizing: border-box
     height: 40px
-    border: 1px solid $color-primary-light
+    border: 1px solid $color-secondary-light
     padding: 6px 40px 6px 20px
     transition: all 400ms
     
     &:hover
-        border-color: $color-primary
+        border-color: $color-secondary
   
     &:not(last-child)
         margin-bottom: 10px
@@ -182,13 +199,13 @@ a
         width: 20px
         height: 20px
         border: 0
-        background-color: $color-primary-light
+        background-color: $color-secondary-light
         color: $color-white
         cursor: pointer
         transition: all 400ms
     
         &:hover
-            background-color: $color-primary
+            background-color: $color-secondary
 
         &:focus
             outline: 0
@@ -200,14 +217,16 @@ a
     height: 70px
     line-height: 70px
     text-align: left
-    color: $color-accent
+    color: $color-primary
   
 
 .main
     position: relative
     box-sizing: border-box
+    width: 90%
+    max-width: 1200px
     height: calc(100vh - 120px)
-    margin: 0 60px
+    margin: 0 auto
   
     &:after
         content: ''
@@ -225,4 +244,4 @@ a
         line-height: 50px
         
     &__link
-        color: $color-accent
+        color: $color-primary

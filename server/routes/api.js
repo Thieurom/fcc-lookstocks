@@ -20,27 +20,34 @@ router.route('/')
         // add a stock to database
         const symbol = req.body.symbol.toUpperCase();
 
-        stockService.getStockMetadata(symbol, (err, data) => {
+        Stock.findOne({ symbol }, (err, stock) => {
             if (err) return next(err);
+            if (stock !== null) {
+                return res.status(409).end();
+            }
 
-            const name = JSON.parse(data).dataset.name;
-            const company = name.substring(0, name.indexOf('(') - 1);
-
-            Stock.create({ company, symbol }, (err, stock) => {
+            stockService.getStockMetadata(symbol, (err, data) => {
                 if (err) return next(err);
-                res.json({
-                    company: stock.company,
-                    symbol: stock.symbol
+
+                const name = JSON.parse(data).dataset.name;
+                const company = name.substring(0, name.indexOf('(') - 1);
+
+                Stock.create({ company, symbol }, (err, stock) => {
+                    if (err) return next(err);
+                    res.status(201).json({
+                        company: stock.company,
+                        symbol: stock.symbol
+                    });
                 });
             });
         });
     });
 
 
-router.route('/:stockSymbol')
+router.route('/:symbol')
     .get((req, res, next) => {
-        // return stock with given stockSymbol from database
-        const symbol = req.params.stockSymbol.toUpperCase();
+        // return stock with given stock symbol from database
+        const symbol = req.params.symbol.toUpperCase();
 
         Stock.findOne({ symbol }, (err, stock) => {
             if (err) return next(err);
@@ -55,7 +62,7 @@ router.route('/:stockSymbol')
 
     .delete((req, res, next) => {
         // delete a stock from database
-        Stock.findOneAndRemove({ stockSymbol: req.params.stockSymbol }, (err, resp) => {
+        Stock.findOneAndRemove({ symbol: req.params.symbol }, (err, resp) => {
             if (err) return next(err);
             res.end();
         });
