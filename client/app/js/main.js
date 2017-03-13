@@ -1,9 +1,19 @@
 'use strict';
 
 const app = {
+    /**
+     * Store all stock symbols that added by users
+     */
     stockSymbols: [],
+
+    /**
+     * Chart object
+     */
     stockChart: createStockChart(),
 
+    /**
+     * Initialize app: mount all event listeners to interactive elements
+     */
     init() {
         // toogle menu
         const menuToggler = document.querySelector('.toggler');
@@ -31,7 +41,7 @@ const app = {
             const stockSymbol = formInput.value;
 
             if (!stockSymbol || !this.isAdded(stockSymbol)) {
-                this.addStock(stockSymbol);
+                this.createStock(stockSymbol);
             }
 
             // reset form
@@ -40,45 +50,83 @@ const app = {
         });
     },
 
-    addStock(stockSymbol) {
+    /**
+     * Start the app
+     */
+    start() {
+        this.init();
+        this.loadStocks();
+    },
+
+    /**
+     * Get all stocks data and draw chart on page load
+     */
+    loadStocks() {
+        stockService.get((err, data) => {
+            if (err) return this.handleError(err);
+
+            const stocks = JSON.parse(data);
+            stocks.forEach((stock) => {
+                this.getStock(stock);
+            });
+        });
+    },
+
+    /**
+     * Create new stock and get its pricing data, update chart
+     */
+    createStock(stockSymbol) {
         stockService.create(stockSymbol, (err, data) => {
             if (err) return this.handleError(err);
 
             // get stock data (price history)
             const stock = JSON.parse(data);
-            stockService.data(stock.symbol, (err, data) => {
-                if (err) return this.handleError(err);
-
-                let stockData = JSON.parse(data).dataset.data.reverse().map(info => {
-                    return [
-                        (new Date(info[0])).getTime(),
-                        info[1]
-                    ]
-                });
-
-                // update chart with new data
-                this.stockChart.addSeries({
-                    name: stock.symbol,
-                    data: stockData
-                });
-
-                // create new stock element and add it to DOM
-                const stockTable = document.querySelector('.stock-table');
-                const stockElement = new StockElement(stock.company, stock.symbol);
-
-                stockElement.addToContainer(stockTable);
-
-                // store in app
-                this.stockSymbols.push(stock.symbol);
-            });
+            this.getStock(stock);
         });
     },
 
+    /**
+     * Get stock pricing data over time
+     */
+    getStock(stock) {
+        stockService.data(stock.symbol, (err, data) => {
+            if (err) return this.handleError(err);
+
+            let stockData = JSON.parse(data).dataset.data.reverse().map(info => {
+                return [
+                    (new Date(info[0])).getTime(),
+                    info[1]
+                ]
+            });
+
+            // update chart with new data
+            this.stockChart.addSeries({
+                name: stock.symbol,
+                data: stockData
+            });
+
+            // create new stock element and add it to DOM
+            const stockTable = document.querySelector('.stock-table');
+            const stockElement = new StockElement(stock.company, stock.symbol);
+
+            stockElement.addToContainer(stockTable);
+
+            // store in app
+            this.stockSymbols.push(stock.symbol);
+        });
+    },
+
+    /**
+     * Handle error response from server
+     */
     handleError(error) {
         const formInfo = document.querySelector('.stock-form__info');
         formInfo.textContent = error.error;
     },
 
+    /**
+     * Check the given stock is already added in chart
+     */
     isAdded(stockSymbol) {
         return this.stockSymbols.some((s) => {
             return s === stockSymbol.toUpperCase();
@@ -88,19 +136,31 @@ const app = {
 
 
 const stockService = {
-    get() {
-
+    /**
+     * Get stock info, include company name and symbol
+     */
+    get(done) {
+        this.requestForStock('GET', '/api/stocks', null, done);
     },
 
+    /**
+     * Create new stock
+     */
     create(stockSymbol, done) {
         const data = JSON.stringify({ symbol: stockSymbol });
         this.requestForStock('POST', '/api/stocks', data, done);
     },
 
+    /**
+     * Remove stock
+     */
     remove(stockSymbol, done) {
 
     },
 
+    /**
+     * Get stock pricing data over time of given stock symbol
+     */
     data(stockSymbol, done) {
         this.requestForStock('GET', `/api/stocks/${stockSymbol}`, null, done);
     },
@@ -266,4 +326,4 @@ function createStockChart() {
 
 
 // start the app
-app.init();
+app.start();
