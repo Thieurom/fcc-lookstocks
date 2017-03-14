@@ -2,14 +2,10 @@
 
 const app = {
     /**
-     * Store all stock symbols that added by users
-     */
-    stockSymbols: [],
-
-    /**
      * Chart object
      */
     stockChart: createStockChart(),
+
 
     /**
      * Initialize app: mount all event listeners to interactive elements
@@ -27,7 +23,7 @@ const app = {
         const chartWrapper = document.querySelector('.chart-wrapper');
 
         chartWrapper.addEventListener('transitionend', () => {
-            window.dispatchEvent(new Event('resize'));
+            this.stockChart.reflow();
         });
 
         // handle submit button to add stock
@@ -50,6 +46,7 @@ const app = {
         });
     },
 
+
     /**
      * Start the app
      */
@@ -57,6 +54,7 @@ const app = {
         this.init();
         this.loadStocks();
     },
+
 
     /**
      * Get all stocks data and draw chart on page load
@@ -72,6 +70,7 @@ const app = {
         });
     },
 
+
     /**
      * Create new stock and get its pricing data, update chart
      */
@@ -84,6 +83,26 @@ const app = {
             this.getStock(stock);
         });
     },
+
+
+    /**
+     * Remove stock and update chart
+     */
+    removeStock(stockSymbol) {
+        stockService.remove(stockSymbol, (err, data) => {
+            if (err) return this.handleError(err);
+
+            const stock = JSON.parse(data);
+            for (let i = 0, n = this.stockChart.series.length; i < n; i++) {
+                const series = this.stockChart.series[i];
+                if (series.name === stock.symbol) {
+                    this.stockChart.series[i].remove();
+                    return;
+                }
+            }
+        });
+    },
+
 
     /**
      * Get stock pricing data over time
@@ -107,14 +126,14 @@ const app = {
 
             // create new stock element and add it to DOM
             const stockTable = document.querySelector('.stock-table');
-            const stockElement = new StockElement(stock.company, stock.symbol);
+            const stockElement = new StockElement(stock.company, stock.symbol, () => {
+                this.removeStock(stock.symbol);
+            });
 
             stockElement.addToContainer(stockTable);
-
-            // store in app
-            this.stockSymbols.push(stock.symbol);
         });
     },
+
 
     /**
      * Handle error response from server
@@ -124,12 +143,13 @@ const app = {
         formInfo.textContent = error.error;
     },
 
+
     /**
      * Check the given stock is already added in chart
      */
     isAdded(stockSymbol) {
-        return this.stockSymbols.some((s) => {
-            return s === stockSymbol.toUpperCase();
+        return this.stockChart.series.some((series) => {
+            return series.name === stockSymbol.toUpperCase();
         });
     }
 };
@@ -143,6 +163,7 @@ const stockService = {
         this.requestForStock('GET', '/api/stocks', null, done);
     },
 
+
     /**
      * Create new stock
      */
@@ -151,12 +172,14 @@ const stockService = {
         this.requestForStock('POST', '/api/stocks', data, done);
     },
 
+
     /**
      * Remove stock
      */
     remove(stockSymbol, done) {
-
+        this.requestForStock('DELETE', `/api/stocks/${stockSymbol}`, null, done);
     },
+
 
     /**
      * Get stock pricing data over time of given stock symbol
@@ -188,7 +211,7 @@ const stockService = {
 }
 
 
-function StockElement(company, symbol) {
+function StockElement(company, symbol, task) {
     let stock;
 
     stock = document.createElement('div');
@@ -198,6 +221,7 @@ function StockElement(company, symbol) {
         <button class="stock__remove">X</button>
     `.trim();
     stock.querySelector('.stock__remove').addEventListener('click', () => {
+        task();
         this.removeFromContainer();
     });
 

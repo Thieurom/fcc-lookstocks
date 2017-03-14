@@ -62,9 +62,9 @@ router.route('/:symbol')
 
     .delete((req, res, next) => {
         // delete a stock from database
-        Stock.findOneAndRemove({ symbol: req.params.symbol }, (err, resp) => {
+        Stock.findOneAndRemove({ symbol: req.params.symbol }, { select: { _id: 0, __v: 0 } }, (err, stock) => {
             if (err) return next(err);
-            res.end();
+            res.status(200).send(stock);
         });
     });
 
