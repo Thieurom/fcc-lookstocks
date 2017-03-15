@@ -65,7 +65,7 @@ const app = {
 
             const stocks = JSON.parse(data);
             stocks.forEach((stock) => {
-                this.getStock(stock);
+                this.getStock(stock.symbol);
             });
         });
     },
@@ -80,7 +80,9 @@ const app = {
 
             // get stock data (price history)
             const stock = JSON.parse(data);
-            this.getStock(stock);
+            const stockSymbol = stock.symbol;
+            const stockCompany = stock.company;
+            this.getStock(stockSymbol);
         });
     },
 
@@ -107,11 +109,12 @@ const app = {
     /**
      * Get stock pricing data over time
      */
-    getStock(stock) {
-        stockService.data(stock.symbol, (err, data) => {
+    getStock(stockSymbol) {
+        stockService.data(stockSymbol, (err, data) => {
             if (err) return this.handleError(err);
 
-            let stockData = JSON.parse(data).dataset.data.reverse().map(info => {
+            const stock = JSON.parse(data);
+            let stockData = stock.data.reverse().map(info => {
                 return [
                     (new Date(info[0])).getTime(),
                     info[1]
@@ -120,18 +123,23 @@ const app = {
 
             // update chart with new data
             this.stockChart.addSeries({
-                name: stock.symbol,
+                name: stockSymbol,
                 data: stockData
             });
 
-            // create new stock element and add it to DOM
-            const stockTable = document.querySelector('.stock-table');
-            const stockElement = new StockElement(stock.company, stock.symbol, () => {
-                this.removeStock(stock.symbol);
-            });
+            this.updateStockTable(stock.company, stock.symbol);
 
-            stockElement.addToContainer(stockTable);
         });
+    },
+
+
+    updateStockTable(company, symbol) {
+        const stockTable = document.querySelector('.stock-table');
+        const stockElement = new StockElement(company, symbol, () => {
+            this.removeStock(symbol);
+        });
+
+        stockElement.addToContainer(stockTable);
     },
 
 
@@ -347,6 +355,12 @@ function createStockChart() {
         series: []
     });
 }
+
+
+const socket = io();
+socket.on('stock addition', symbol => {
+    console.log(msg);
+});
 
 
 // start the app

@@ -9,6 +9,7 @@ const DATABASE = process.env.DATABASE;
 
 const app = express();
 const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 let db;
 
 
@@ -51,6 +52,13 @@ app.use((err, req, res, next) => {
     res.status(status).send({ error: message });
 });
 
+
+io.on('connection', client => {
+    console.log('A client connected.');
+    client.on('stock addition', symbol => {
+        io.emit('stock addition', symbol);
+    });
+});
 
 // Establish server
 server.listen(PORT, () => {

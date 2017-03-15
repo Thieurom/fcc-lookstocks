@@ -36,7 +36,7 @@ exports.getStockData = (stockSymbol, done) => {
     const startDate = (year - 2) + '-' + month + '-' + date;
     const endDate = year + '-' + month + '-' + date;
 
-    const url = QUANDL_BASE_URL + '/' + stockSymbol + '.json?column_index=4' + '&api_key=' + QUANDL_API_KEY + '&start_date=' + startDate + '&end_date=' + endDate;
+    const url = QUANDL_BASE_URL + '/' + stockSymbol + '/data.json?column_index=4' + '&api_key=' + QUANDL_API_KEY + '&start_date=' + startDate + '&end_date=' + endDate;
 
     request(url, (err, resp, body) => {
         if (err) return done(err);

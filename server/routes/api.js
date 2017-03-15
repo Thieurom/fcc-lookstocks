@@ -53,9 +53,16 @@ router.route('/:symbol')
             if (err) return next(err);
             if (stock === null) return res.status(404).end();
 
+            const stockSymbol = stock.symbol;
+            const stockCompany = stock.company;
+
             stockService.getStockData(symbol, (err, data) => {
                 if (err) return next(err);
-                res.status(200).send(data);
+                res.status(200).json({
+                    company: stockCompany,
+                    symbol: stockSymbol,
+                    data: JSON.parse(data).dataset_data.data
+                });
             });
         });
     })
