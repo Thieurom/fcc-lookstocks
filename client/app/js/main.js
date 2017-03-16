@@ -4,7 +4,11 @@ const app = {
     /**
      * Chart object
      */
-    stockChart: createStockChart(),
+    stockChart: StockChart(),
+
+    stockSocket: new StockSocketService((symbol) => {
+        app.getStock(symbol);
+    }),
 
 
     /**
@@ -67,6 +71,8 @@ const app = {
             stocks.forEach((stock) => {
                 this.getStock(stock.symbol);
             });
+
+            this.stockSocket.start();
         });
     },
 
@@ -78,11 +84,10 @@ const app = {
         stockService.create(stockSymbol, (err, data) => {
             if (err) return this.handleError(err);
 
-            // get stock data (price history)
+            // // get stock data (price history)
             const stock = JSON.parse(data);
             const stockSymbol = stock.symbol;
-            const stockCompany = stock.company;
-            this.getStock(stockSymbol);
+            this.stockSocket.sendAdditionEvent(stockSymbol);
         });
     },
 
@@ -128,7 +133,6 @@ const app = {
             });
 
             this.updateStockTable(stock.company, stock.symbol);
-
         });
     },
 
@@ -161,6 +165,7 @@ const app = {
         });
     }
 };
+
 
 
 const stockService = {
@@ -196,6 +201,7 @@ const stockService = {
         this.requestForStock('GET', `/api/stocks/${stockSymbol}`, null, done);
     },
 
+
     requestForStock(method, url, data, callback) {
         let xhr = new XMLHttpRequest();
 
@@ -216,7 +222,8 @@ const stockService = {
         };
         xhr.send(data);
     }
-}
+};
+
 
 
 function StockElement(company, symbol, task) {
@@ -247,7 +254,8 @@ StockElement.prototype.removeFromContainer = function () {
 }
 
 
-function createStockChart() {
+
+function StockChart() {
     return Highcharts.stockChart('stock-chart', {
         colors: [
             '#6E2594', '#ECD444', '#256EFF', '#26547C', '#FE7F2D',
@@ -357,10 +365,29 @@ function createStockChart() {
 }
 
 
-const socket = io();
-socket.on('stock addition', symbol => {
-    console.log(msg);
-});
+
+function StockSocketService(addStockHandler, removeStockHandler) {
+    this.socket = null;
+    this.eventHandlers = {
+        addition: addStockHandler,
+        removal: removeStockHandler
+    };
+}
+
+StockSocketService.prototype.start = function() {
+    this.socket = io();
+    this.socket.on('stock addition', this.eventHandlers['addition']);
+    // this.socket.on('stock removal', this.eventHandlers['removal']);
+};
+
+StockSocketService.prototype.sendAdditionEvent = function(symbol) {
+    this.socket.emit('stock addition', symbol);
+};
+
+// StockSocketService.prototype.sendRemovalEvent = function(symbol) {
+//     this.socket.emit('stock removal', symbol);
+// };
+
 
 
 // start the app
