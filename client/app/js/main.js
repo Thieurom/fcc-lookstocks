@@ -111,16 +111,16 @@ const app = {
      * Remove stock and update chart
      */
     removeStock(stockSymbol) {
-        stockService.remove(stockSymbol, (err, data) => {
-            if (err) return this.handleError(err);
+        // for best user experience, immediately update chart
+        this.removeStockFromChart(stockSymbol);
 
-            const stock = JSON.parse(data);
-            for (let i = 0, n = this.stockChart.series.length; i < n; i++) {
-                const series = this.stockChart.series[i];
-                if (series.name === stock.symbol) {
-                    this.stockChart.series[i].remove();
-                    return;
-                }
+        // then request updating on server
+        stockService.remove(stockSymbol, (err, data) => {
+            // for any error occurs, check all stocks on database after 15s
+            if (err) {
+                setTimeout(() => {
+                    this.loadStocks();
+                }, 15000);
             }
         });
     },
@@ -142,10 +142,7 @@ const app = {
             });
 
             // update chart with new data
-            this.stockChart.addSeries({
-                name: stockSymbol,
-                data: stockData
-            });
+            this.addStockToChart(stockSymbol, stockData);
 
             this.updateStockTable(stock.company, stock.symbol);
         });
@@ -159,6 +156,31 @@ const app = {
         });
 
         stockElement.addToContainer(stockTable);
+    },
+
+
+    /**
+     * Add new stock data for redrawing chart
+     */
+    addStockToChart(symbol, data) {
+        this.stockChart.addSeries({
+            name: symbol,
+            data: data
+        });
+    },
+
+
+    /**
+     * Remove a stock data from chart
+     */
+    removeStockFromChart(symbol) {
+        for (let i = 0, n = this.stockChart.series.length; i < n; i++) {
+            const series = this.stockChart.series[i];
+            if (series.name === symbol) {
+                this.stockChart.series[i].remove();
+                return;
+            }
+        }
     },
 
 
@@ -389,13 +411,13 @@ function StockSocketService(addStockHandler, removeStockHandler) {
     };
 }
 
-StockSocketService.prototype.start = function() {
+StockSocketService.prototype.start = function () {
     this.socket = io();
     this.socket.on('stock addition', this.eventHandlers['addition']);
     // this.socket.on('stock removal', this.eventHandlers['removal']);
 };
 
-StockSocketService.prototype.sendAdditionEvent = function(symbol) {
+StockSocketService.prototype.sendAdditionEvent = function (symbol) {
     this.socket.emit('stock addition', symbol);
 };
 
