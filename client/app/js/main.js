@@ -67,9 +67,19 @@ const app = {
         stockService.get((err, data) => {
             if (err) return this.handleError(err);
 
+            // the latest list of stocks on database
             const stocks = JSON.parse(data);
+
+            // the list of stock symbols's currently on chart
+            const chartedStockSymbols = this.stockChart.series.map((series) => {
+                return series.name;
+            });
+
             stocks.forEach((stock) => {
-                this.getStock(stock.symbol);
+                // only get the pricing data of not-charted stock symbols
+                if (chartedStockSymbols.indexOf(stock) == -1) {
+                    this.getStock(stock.symbol);
+                }
             });
 
             this.stockSocket.start();
