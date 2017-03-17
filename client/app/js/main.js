@@ -8,6 +8,8 @@ const app = {
 
     stockSocket: new StockSocketService((symbol) => {
         app.getStock(symbol);
+    }, (symbol) => {
+        app.removeStock(symbol);
     }),
 
 
@@ -111,7 +113,11 @@ const app = {
      * Remove stock and update chart
      */
     removeStock(stockSymbol) {
-        // for best user experience, immediately update chart
+        // for best user experience, immediately remove stock from stoock table,
+        // and update chart
+        const stockElement = document.querySelector('.stock[data-symbol="' + `${stockSymbol.toLowerCase()}` + '"]');
+        this.removeStockFromStockTable(stockElement);
+
         this.removeStockFromChart(stockSymbol);
 
         // then request updating on server
@@ -123,6 +129,9 @@ const app = {
                 }, 15000);
             }
         });
+
+        // finally, inform to server then server can broadcast to other clients about removed stock
+        this.stockSocket.sendRemovalEvent(stockSymbol);
     },
 
 
@@ -144,18 +153,24 @@ const app = {
             // update chart with new data
             this.addStockToChart(stockSymbol, stockData);
 
-            this.updateStockTable(stock.company, stock.symbol);
+            this.addStockToStockTable(stock.company, stock.symbol);
         });
     },
 
 
-    updateStockTable(company, symbol) {
+    addStockToStockTable(company, symbol) {
         const stockTable = document.querySelector('.stock-table');
-        const stockElement = new StockElement(company, symbol, () => {
+        const stockElement = StockElement(company, symbol, () => {
             this.removeStock(symbol);
         });
 
-        stockElement.addToContainer(stockTable);
+        stockTable.appendChild(stockElement);
+    },
+
+
+    removeStockFromStockTable(stockElement) {
+        const stockTable = document.querySelector('.stock-table');
+        stockTable.removeChild(stockElement);
     },
 
 
@@ -264,30 +279,20 @@ const stockService = {
 
 
 function StockElement(company, symbol, task) {
-    let stock;
+    let stockElement;
 
-    stock = document.createElement('div');
-    stock.className = 'stock';
-    stock.innerHTML = `
+    stockElement = document.createElement('div');
+    stockElement.className = 'stock';
+    stockElement.setAttribute('data-symbol', symbol.toLowerCase());
+    stockElement.innerHTML = `
         <div class="stock__detail"><span class="stock__symbol">${symbol}</span> – <span class="stock__name">${company}</span></div>
         <button class="stock__remove">X</button>
     `.trim();
-    stock.querySelector('.stock__remove').addEventListener('click', () => {
+     stockElement.querySelector('.stock__remove').addEventListener('click', () => {
         task();
-        this.removeFromContainer();
     });
 
-    this.element = stock;
-    this.container = null;
-}
-
-StockElement.prototype.addToContainer = function (container) {
-    container.appendChild(this.element);
-    this.container = container;
-}
-
-StockElement.prototype.removeFromContainer = function () {
-    this.container.removeChild(this.element);
+    return stockElement;
 }
 
 
@@ -414,16 +419,16 @@ function StockSocketService(addStockHandler, removeStockHandler) {
 StockSocketService.prototype.start = function () {
     this.socket = io();
     this.socket.on('stock addition', this.eventHandlers['addition']);
-    // this.socket.on('stock removal', this.eventHandlers['removal']);
+    this.socket.on('stock removal', this.eventHandlers['removal']);
 };
 
 StockSocketService.prototype.sendAdditionEvent = function (symbol) {
     this.socket.emit('stock addition', symbol);
 };
 
-// StockSocketService.prototype.sendRemovalEvent = function(symbol) {
-//     this.socket.emit('stock removal', symbol);
-// };
+StockSocketService.prototype.sendRemovalEvent = function(symbol) {
+    this.socket.emit('stock removal', symbol);
+};
 
 
 
