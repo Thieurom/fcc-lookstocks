@@ -84,9 +84,14 @@ const app = {
         stockService.create(stockSymbol, (err, data) => {
             if (err) return this.handleError(err);
 
-            // // get stock data (price history)
+            // get stock data (price history)
             const stock = JSON.parse(data);
             const stockSymbol = stock.symbol;
+
+            // go ahead to get pricing data
+            this.getStock(stockSymbol);
+
+            // inform to server then server can broadcast to other clients about newly-created stock
             this.stockSocket.sendAdditionEvent(stockSymbol);
         });
     },

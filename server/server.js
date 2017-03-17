@@ -56,7 +56,8 @@ app.use((err, req, res, next) => {
 io.on('connection', client => {
     console.log('A client connected.');
     client.on('stock addition', symbol => {
-        io.emit('stock addition', symbol);
+        // io.emit('stock addition', symbol);
+        client.broadcast.emit('stock addition', symbol);
     });
 });
 
