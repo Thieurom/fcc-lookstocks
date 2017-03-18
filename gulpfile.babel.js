@@ -49,10 +49,14 @@ gulp.task('styles', () => {
 // Transpile, concat and minify JavaScript
 gulp.task('scripts', () => {
     return gulp.src([
+        'client/app/js/stockChart.js',
+        'client/app/js/stockElement.js',
+        'client/app/js/stockService.js',
+        'client/app/js/stockSocketService.js',
         'client/app/js/main.js'
     ])
         .pipe($.sourcemaps.init())
-        // .pipe($.concat('main.js'))
+        .pipe($.concat('app.js'))
         .pipe($.babel())
         // .pipe($.iife({ useStrict: false }))
         .pipe($.sourcemaps.write('./'))
