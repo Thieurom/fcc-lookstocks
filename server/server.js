@@ -23,7 +23,12 @@ db.once('open', () => {
 
 
 // Config for development
-app.set('appPath', path.join(__dirname, '../client/app'));
+if (app.get('env') === 'development') {
+    app.set('appPath', path.join(__dirname, '../client/app'));
+} else {
+    app.set('appPath', path.join(__dirname, '../client/dist'));
+}
+
 app.use(express.static(app.get('appPath')));
 app.use(express.static(path.join(app.get('appPath'), '../.tmp')));
 

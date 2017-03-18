@@ -4,6 +4,7 @@ import gulp from 'gulp';
 import browserSync from 'browser-sync';
 import runSequence from 'run-sequence';
 import gulpLoadPlugins from 'gulp-load-plugins';
+import del from 'del';
 
 
 const $ = gulpLoadPlugins();
@@ -64,6 +65,27 @@ gulp.task('scripts', () => {
 });
 
 
+// Optimize HTML
+gulp.task('html', () => {
+    return gulp.src('client/app/index.html')
+        .pipe($.useref({ searchPath: ['client/.tmp', 'client/app'] }))
+        .pipe($.if('*.js', $.uglify()))
+        .pipe($.if('*.css', $.cssnano()))
+        .pipe($.if('*.html', $.htmlmin({
+            removeComments: true,
+            collapseWhitespace: true,
+            collapseBooleanAttributes: true,
+            removeAttributeQuotes: true,
+            removeRedundantAttributes: true,
+            removeEmptyAttributes: true,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true,
+            removeOptionalTags: true
+        })))
+        .pipe(gulp.dest('client/dist'));
+});
+
+
 // Browser Sync
 gulp.task('browserSync', () => {
     bs.init({
@@ -71,6 +93,10 @@ gulp.task('browserSync', () => {
         port: 5000
     });
 });
+
+
+// Clear output directory
+gulp.task('clean', () => del(['client/.tmp', 'client/dist'], { dot: true }));
 
 
 // Watch and serve the output from app directory
@@ -83,4 +109,19 @@ gulp.task('serve', ['buildHTML', 'styles', 'scripts'], (cb) => {
     gulp.watch('client/app/templates/index.pug', ['buildHTML', bs.reload]);
     gulp.watch('client/app/sass/*.sass', ['styles']);
     gulp.watch('client/app/js/*.js', ['scripts', bs.reload]);
+});
+
+
+// Build and serve the output from the dist build
+gulp.task('serve:dist', ['default'], $.shell.task('NODE_ENV=production node server/server.js'));
+
+
+// Build the production files, default task
+gulp.task('default', ['clean'], (cb) => {
+    runSequence(
+        'styles',
+        ['scripts'],
+        'html',
+        cb
+    );
 });
