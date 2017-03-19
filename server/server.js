@@ -8,10 +8,12 @@ const path = require('path');
 require('dotenv').config({ path: __dirname + '/config/.env' });
 const PORT = parseInt(process.env.PORT, 10);
 const DATABASE = process.env.DATABASE;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const MongoStore = require('connect-mongo')(session);
 let db;
 
 
@@ -24,7 +26,7 @@ db.once('open', () => {
 });
 
 
-// Config for development
+// Set appPath directory according to environment
 if (app.get('env') === 'development') {
     app.set('appPath', path.join(__dirname, '../client/app'));
 } else {
@@ -35,9 +37,10 @@ app.use('/static', express.static(app.get('appPath')));
 app.use('/static', express.static(path.join(app.get('appPath'), '../.tmp')));
 
 app.use(session({
-    secret: 'secret',
+    secret: SESSION_SECRET,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 app.use(bodyPaser.json());
 app.use(csrf());
