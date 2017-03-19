@@ -33,8 +33,8 @@ if (app.get('env') === 'development') {
     app.set('appPath', path.join(__dirname, '../client/dist'));
 }
 
-app.use('/static', express.static(app.get('appPath')));
-app.use('/static', express.static(path.join(app.get('appPath'), '../.tmp')));
+app.use(express.static(app.get('appPath')));
+app.use(express.static(path.join(app.get('appPath'), '../.tmp')));
 
 app.use(session({
     secret: SESSION_SECRET,
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(app.get('appPath'), '/index.html'));
+    res.sendFile(path.join(app.get('appPath'), '/home.html'));
 });
 
 app.use('/api/stocks', require('./routes/api'));

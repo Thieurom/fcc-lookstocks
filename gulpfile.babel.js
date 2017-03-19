@@ -26,7 +26,7 @@ gulp.task('nodemon', cb => {
 
 // Build HTML files
 gulp.task('buildHTML', () => {
-    return gulp.src('client/app/templates/index.pug')
+    return gulp.src('client/app/templates/home.pug')
         .pipe($.pug({ pretty: true }))
         .pipe(gulp.dest('client/app'));
 });
@@ -67,7 +67,7 @@ gulp.task('scripts', () => {
 
 // Optimize HTML
 gulp.task('html', () => {
-    return gulp.src('client/app/index.html')
+    return gulp.src('client/app/home.html')
         .pipe($.useref({ searchPath: ['client/.tmp', 'client/app'] }))
         .pipe($.if('*.js', $.uglify()))
         .pipe($.if('*.css', $.cssnano()))
@@ -119,8 +119,8 @@ gulp.task('serve:dist', ['default'], $.shell.task('NODE_ENV=production node serv
 // Build the production files, default task
 gulp.task('default', ['clean'], (cb) => {
     runSequence(
-        'styles',
-        ['scripts'],
+        'buildHTML',
+        ['styles', 'scripts'],
         'html',
         cb
     );

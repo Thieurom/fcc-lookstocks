@@ -11,7 +11,7 @@
     "start": "node server/server.js",
     "postinstall": "./node_modules/.bin/gulp",
     "serve": "./node_modules/.bin/gulp serve",
-    "serve:dist": "./node_modules/.bin/gulp serve:dist",
+    "serve:dist": "NODE_ENV=production ./node_modules/.bin/gulp serve:dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
