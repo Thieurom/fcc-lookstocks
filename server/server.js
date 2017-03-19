@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyPaser = require('body-parser');
+const session = require('express-session');
+const csrf = require('csurf')
 const path = require('path');
 
 require('dotenv').config({ path: __dirname + '/config/.env' });
@@ -29,13 +31,24 @@ if (app.get('env') === 'development') {
     app.set('appPath', path.join(__dirname, '../client/dist'));
 }
 
-app.use(express.static(app.get('appPath')));
-app.use(express.static(path.join(app.get('appPath'), '../.tmp')));
+app.use('/static', express.static(app.get('appPath')));
+app.use('/static', express.static(path.join(app.get('appPath'), '../.tmp')));
 
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(bodyPaser.json());
+app.use(csrf());
 
 
 // Routing
+app.use((req, res, next) => {
+    res.cookie('x-csrf-token', req.csrfToken());
+    next();
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(app.get('appPath'), '/index.html'));
 });
@@ -49,7 +62,7 @@ app.use((req, res, next) => {
     return next(err);
 });
 
-// Error handle
+// Error handler
 app.use((err, req, res, next) => {
     let status = err.status || 500;
     let message = app.get('env') === 'development' ? err.message : {};

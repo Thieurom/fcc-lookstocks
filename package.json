@@ -21,8 +21,10 @@
   "homepage": "https://github.com/Thieurom/fcc-lookstocks#readme",
   "dependencies": {
     "body-parser": "^1.17.1",
+    "csurf": "^1.9.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
+    "express-session": "^1.15.1",
     "mongoose": "^4.8.6",
     "request": "^2.80.0",
     "socket.io": "^1.7.3"
