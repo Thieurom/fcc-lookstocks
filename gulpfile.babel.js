@@ -106,7 +106,7 @@ gulp.task('serve', ['buildHTML', 'styles', 'scripts'], (cb) => {
         'browserSync',
         cb
     );
-    gulp.watch('client/app/templates/index.pug', ['buildHTML', bs.reload]);
+    gulp.watch('client/app/templates/home.pug', ['buildHTML', bs.reload]);
     gulp.watch('client/app/sass/*.sass', ['styles']);
     gulp.watch('client/app/js/*.js', ['scripts', bs.reload]);
 });

@@ -57,6 +57,10 @@ function StockChart() {
             inputEnabled: false
         },
 
+        xAxis: {
+            gridLineWidth: 1
+        },
+
         yAxis: {
             labels: {
                 formatter: function () {
@@ -101,8 +105,16 @@ function StockChart() {
             enabled: false
         },
 
-        xAxis: {
-            gridLineWidth: 1
+        lang: {
+            noData: 'Add stocks from menu to see the chart.'
+        },
+
+        noData: {
+            style: {
+                // fontWeight: 'bold',
+                fontSize: '16px',
+                color: '#2FCB98'
+            }
         },
 
         series: []

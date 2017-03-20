@@ -33,6 +33,7 @@
     "express-session": "^1.15.1",
     "mongoose": "^4.8.6",
     "request": "^2.80.0",
+    "serve-favicon": "^2.4.1",
     "socket.io": "^1.7.3"
   },
   "devDependencies": {

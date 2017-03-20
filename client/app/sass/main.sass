@@ -40,16 +40,8 @@ a
     color: inherit
 
 
-// Misc
-@keyframes fade-out
-  from
-    opacity: 1
-  to
-    opacity: 0
-    
-    
-.animated
-  animation: fade-out 250ms ease-in-out
+input
+    -webkit-appearance: none
 
 
 // Components
@@ -111,8 +103,10 @@ a
     border: 0
     background-color: $color-primary
     font-size: 18px
+    line-height: 30px
     color: $color-white
     cursor: pointer
+    -webkit-appearance: none
     
     &:focus
         outline: 0
@@ -198,6 +192,7 @@ a
         right: 10px
         width: 20px
         height: 20px
+        padding: 0
         border: 0
         background-color: $color-secondary-light
         color: $color-white

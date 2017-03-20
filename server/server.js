@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyPaser = require('body-parser');
 const session = require('express-session');
 const csrf = require('csurf')
+const favicon = require('serve-favicon');
 const path = require('path');
 
 require('dotenv').config({ path: __dirname + '/config/.env' });
@@ -32,6 +33,8 @@ if (app.get('env') === 'development') {
 } else {
     app.set('appPath', path.join(__dirname, '../client/dist'));
 }
+
+app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 app.use(express.static(app.get('appPath')));
 app.use(express.static(path.join(app.get('appPath'), '../.tmp')));
